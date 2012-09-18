@@ -10,7 +10,7 @@ This repository represents the transition from a closed-source project to open s
   -   to offer a starting point for other Parliamentary data scraping projects, apps, etc.
   -   to enable people in other countries or individual provinces or municipalities to start a similar 
       site for their respective legislative assemblies without having to start from scratch
-  -   with the intention of keeping this area of development, that is the Open Parliament movement, free, open, united and not exclusive.
+  -   with the intention of keeping this area of development, that is the Open Parliament movement, free, open, not exclusive, and more or less united.
 
 Thanks
 ======
