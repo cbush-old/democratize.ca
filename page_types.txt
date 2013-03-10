@@ -7,7 +7,6 @@ Page types:
   LOGIN/REGISTER PAGE
   MP PAGE
   PRIVACY POLICY PAGE
-  RIDING PAGE?
   RSS PAGE
   USER PAGE - INSIDE
   USER PAGE - OUTSIDE
@@ -17,8 +16,6 @@ Page types descriptions:
   
   HOME PAGE
     Introduces users to Democratize.ca. 
-    Blog feed?
-    Featured bills?
     Directs users to bill section
   
   ABOUT PAGE
@@ -29,18 +26,28 @@ Page types descriptions:
   BILL PAGE
     Features one specific bill
     Links to previous/next bill in the pool
+    Link to list view of bills
+    Search bar with drop down options
+    link to advanced search lightbox
     The pool is determined by search and refinement options below, 
       or random/last updated/most active by default
     Bill summary
     Categorization (subject) tags
     Current status in parliament
+    When a tag is clicked it repopulates the carousel with bills 
+      that contain that tag.
+    Wayfinding copy under bill that indicates what is contained
+      within the carousel (e.g. "1 of 50 search results", or "1 of 5
+      results for 'privacy'"
     Links to full text of each of the bill's editions
-    Sponsor photo, name, title, riding?, and a list of his or her other bills? (i.e. More from this sponsor, or this can be a pool of its own)
+    Sponsor photo, name
+    Link to sponsor's profile page
     Allows the user to vote yes or no on the bill
+    Lightbox asking basic demographic information of voter. Include
+      "don't ask me again" button
     Result of public votes after voting
-    Breakdown of public votes by riding
+    Breakdown of public votes by riding and by Province
     Result of parliamentary votes (if applicable)?
-    Links to news sites with articles relating to this bill?
     Allows users to comment and shows other comments on the bill
     Has tastefully placed social media integration buttons (share, tweet, etc)
     
@@ -61,29 +68,12 @@ Page types descriptions:
     Shows the MP's current riding
     Shows the MP's various office addresses and phone numbers
     Shows the MP's e-mail address and official website url
-    Shows a short bio of the MP if applicable
-    Displays a list of the MP's most recent bills, if applicable? Or link to carousel
-    Displays a list of the MP's committees, if applicable
-    Displays a list of the MP's roles
-    Displays a history of Elections in which the MP was involved
-    
-    OR
-    
-    The above, but the MP is a carousel (you can flip to next/prev MP), and below it, his or her bill appears as a carousel...
-    
+    Displays a list of the MP's most recent bills, if applicable
+    Bills on list link to bills page and a carousel of the mps bills
 
   PRIVACY POLICY PAGE
     Displays the site's privacy policy
   
-  RIDING PAGE?
-    Should this exist?
-    Shows a map of the riding
-    Shows the riding name
-    Shows the riding MP's photo and name
-    Shows some info about the riding
-    Displays a list of previous elections
-    Shows a list of users from this riding
-
   RSS PAGE
     Contains the raw XML of the RSS feed for the site
   
