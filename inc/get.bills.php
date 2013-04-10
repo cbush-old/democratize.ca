@@ -18,11 +18,11 @@ $request->mode = "desc";
 $getreq = array(
   $_GET["ctlb"],
   $_GET["ctlc"],
+  $_GET["ctld"]
 );
 
 if(isset($_GET["summary"])) $getreq[] = "summary";
 if(isset($_GET["votes"])) $getreq[] = "votes";
-
 
 
 
@@ -75,7 +75,7 @@ foreach($getreq as $i => $q){
 
   $preg_result = array();
   
-  if(!$f_bill && preg_match("/^(c|s|u)?(?:-?([0-9]{1,4}))?$/",$q,$matches)){
+  if(!$f_bill && preg_match("/^(c|s|u|t)?(?:-?([0-9]{1,4}))?$/",$q,$matches)){
   
     if(isset($matches[1])) $request->chamber = strtoupper($matches[1]);
     if(isset($matches[2])) $request->number = $matches[2];
@@ -224,7 +224,11 @@ $Response->bills = array();
 
 while($r = $result->fetchObject()){
   
+  $spons = lcname($r->sponsor);
+  $r->sponsor_uri = "/mps/{$spons}/";
+  $r->sponsor_img = "{$spons}-{$r->party}.jpg";
   $r->object_uri = "/bills/{$r->parl_session}/{$r->number}/";
   $Response->bills[] = $r;
   
 }
+

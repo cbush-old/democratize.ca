@@ -16,6 +16,9 @@ function unravel($x){
     foreach($x as $k=>$v){
       if(strpos($k,"_uri") && !is_object($v) && !is_array($v))
         $v = "<a href='".url_from_uri($v)."'>{$v}</a>";
+
+      else if(strpos($k,"_img"))
+        $v = "<img src='http://img.democratize.ca/portraits/{$v}'/>";
       
       $str .= "<tr><td>{$k}</td><td>";
       $str .= unravel($v);
