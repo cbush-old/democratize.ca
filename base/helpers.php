@@ -9,6 +9,10 @@ function feels_good_man($in){
   );
 }
 
+function active_lang_array(){
+  return array("en","fr");
+}
+
 function url_from_uri($v){
 
   return URL.$v;

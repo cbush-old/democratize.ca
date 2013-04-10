@@ -23,6 +23,12 @@ $getreq = array(
 
 if(isset($_GET["summary"])) $getreq[] = "summary";
 if(isset($_GET["votes"])) $getreq[] = "votes";
+if(isset($_GET["tags"])) $getreq[] = "tags";
+
+
+
+
+$getreq = array_unique($getreq); 
 
 
 
@@ -63,10 +69,6 @@ $joins = array(
 $f_bill = 0; 
 $f_parl = 0;
 $f_parl_id = 0;
-$f_subject = 0;
-
-
-$SUBJECTS = explode("\n",file_get_contents("../var/subjects_uri"));
 
 
 foreach($getreq as $i => $q){
@@ -92,12 +94,6 @@ foreach($getreq as $i => $q){
     $request->parl_id = $matches[1];
     $f_parl_id = 1;
     
-  } else if(!$f_subject && in_array($q, $SUBJECTS)){
-    
-    $request->subject = $q;
-    $f_subject = 1;
-
-
   } else if($q=="summary"){
     
     // special request
@@ -117,6 +113,21 @@ foreach($getreq as $i => $q){
       where bills.id = user_votes.bill_id
     ) as votes
     ";
+    
+  } else if($q=="tags"){
+    
+    foreach(active_lang_array() as $lang){
+      $select[] = "
+        group_concat(
+          distinct
+          subjects.name_{$lang}
+          separator ', '
+        ) as tags_{$lang}
+      ";
+    }
+      
+    $joins[] = "join `bills_subjects` on bills_subjects.bill_id = bills.id";
+    $joins[] = "join `subjects` on bills_subjects.subject_id = subjects.id";
     
   } else {
   
@@ -216,6 +227,9 @@ $result = DB::query($query = "
   order by {$request->sort} {$request->mode}
   limit {$request->p},{$request->n}
 ");
+
+
+var_dump(DB::get()->errorInfo());
 
 
 $Response->n_results = $result->rowCount();
