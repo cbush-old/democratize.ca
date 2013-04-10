@@ -1,4 +1,15 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
-RewriteRule ^([^\./]*)/?([^\.\?\/]*)/?([^\.\?\/]*)/?([^\.\?\/]*)/?\.?(json|xml)?$ index.php?ctla=$1&ctlb=$2&ctlc=$3&ctld=$4&format=$5 [QSA,L]
+
+RewriteRule ^\
+([^\.?/]*)/?\
+([^\.?/]*)/?\
+([^\.?/]*)/?\
+([^\.?/]*)/?\
+(?:\.(json|xml))?\
+$ \
+index.php?ctla=$1&ctlb=$2&ctlc=$3&ctld=$4&format=$5 \
+\
+[QSA,L]
+
 </IfModule>
