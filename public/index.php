@@ -1,43 +1,56 @@
 <?php
+
 require_once("../config.php");
+require_once("../base/exceptions.php");
 require_once("../base/helpers.php");
 require_once("../base/codes.php");
 require_once("../base/db.php");
+require_once("../base/get_controller_name.php");
 
-//  IMPORTANT: crunch the user data from GET.
-foreach($_GET as $k => $v)
+static $control_keys = array("ctla","ctlb","ctlc","ctld");
+
+$URI = array();
+
+//  IMPORTANT: crunch the user data from QUERY_STRING.
+foreach($_GET as $k => $v){
   $_GET[$k] = feels_good_man($v);
-
-
-//  If first segment of URI is not in these, serve notfound page. 
-$possible_bases = array(
-  "about"=>1,  "bills"=>1,  "comments"=>1,
-  "contribute"=>1,  "license"=>1,  "mps"=>1,
-  "parties"=>1,  "privacy"=>1,  "ridings"=>1,
-  "rss"=>1,  "subjects"=>1,  "users"=>1,  
-  "votes"=>1
-);
-
-$base = $_GET["ctla"];
-
-$Response = new StdClass();
-
-if($base == ""){
-
-  include ("../inc/get.home.php");
-
-} else if(isset($possible_bases[$base])){
-
-  include ("../inc/get.{$base}.php");
-
-} else {
-
-  include ("../inc/get.notfound.php");
-
+  if(in_array($k, $control_keys) && $_GET[$k])
+    $URI[] = $_GET[$k];
 }
 
-preg_match("/^(html|json|xml)$/",$_GET["format"])
-  and $format = $_GET["format"]
-  or $format = "html";
 
-include("../inc/out.{$format}.php");
+
+try {
+
+  $controller = get_controller_name($URI);
+  
+  $path = "../inc/{$controller}.php";
+  
+  if(!file_exists($path))
+    throw new MISSING_CONTROLLER ($path);
+  
+  $Response = new StdClass();
+  
+  include $path;
+  
+  preg_match("/^(html|json|xml)$/",$_GET["format"])
+    and $format = $_GET["format"]
+    or $format = "html";
+
+  include "../inc/out.{$format}.php";
+  
+
+} catch(HTTP_status $e){
+  
+  header($e->reason, true, $e->code);
+  
+} catch(MISSING_CONTROLLER $e){
+
+  file_put_contents(
+    "../var/log.serious",
+    time()."\tMISSING CONTROLLER: {$e->which}\n",
+    FILE_APPEND
+  );
+  header(" ", true, 500);
+
+}

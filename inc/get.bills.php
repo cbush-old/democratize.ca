@@ -144,6 +144,8 @@ $group_by = "group by bills.id";
 $table = "bills";
 $joins = array();
 
+
+
 //  detail options
 
 if($request->get_sponsor){

@@ -1,4 +1,30 @@
 <?php
+
+//  This function returns an array of regexes for matching 
+//  a bill request in a URI.
+
+//  Edit this function to add new functionality to the site.
+
+function bill_uri_regexes(){
+
+  static $rx = array(
+    "bill_number" => "(?:(c|s|u|t)?(?:-?([0-9]{1,5}))?)",
+    "parl_sess" => "(?:([0-9]{1,3})(?:-([0-9]+))?)",
+    "parl_id" => "([0-9]{7,9})",
+    "ok_base" => "(latest|popular|controversial|active|mp)"
+  );
+  
+  return $rx;
+
+}
+
+function request_method(){
+  static $method = null;
+  if(!$method) 
+    return $method = $_SERVER["REQUEST_METHOD"];
+  return $method;
+}
+
 function feels_good_man($in){
   return preg_replace("/[^a-z0-9-,]/","",
     strtolower(
