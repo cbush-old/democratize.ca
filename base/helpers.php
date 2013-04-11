@@ -12,7 +12,7 @@ function bill_uri_regexes(){
     "parl_sess" => "(?:([0-9]{1,3})(?:-([0-9]+))?)",
     "parl_id" => "([0-9]{7,9})",
     "party" => "(cpc|lpc|ndp|bq|gp|pc)",
-    "ok_base" => "(latest|popular|controversial|active|featured|mp)"
+    "ok_base" => "(latest|popular|unpopular|active|featured|mp)"
   );
   
   return $rx;
