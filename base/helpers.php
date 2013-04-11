@@ -8,10 +8,11 @@
 function bill_uri_regexes(){
 
   static $rx = array(
-    "bill_number" => "(?:(c|s|u|t)?(?:-?([0-9]{1,5}))?)",
+    "bill_number" => "(?:(c|s|u|t)(?:-?([0-9]{1,5}))?)",
     "parl_sess" => "(?:([0-9]{1,3})(?:-([0-9]+))?)",
     "parl_id" => "([0-9]{7,9})",
-    "ok_base" => "(latest|popular|controversial|active|mp)"
+    "party" => "(cpc|lpc|ndp|bq|gp|pc)",
+    "ok_base" => "(latest|popular|controversial|active|featured|mp)"
   );
   
   return $rx;

@@ -1,6 +1,6 @@
 <?php
 
-//  This script is included from the main controller
+//  This script is included from the controller
 //  and is tasked with assessing the get request,
 //  assembling a query and filling the Response
 //  object with the result.
@@ -14,8 +14,8 @@ $request->parl_id = "";
 
 $request->subject = "";
 
-$request->p = 0;  // page (offset of the result set)
-$request->n = 3;  // number of results
+$request->p = 0;
+$request->n = 3;
 $request->sort = "updated";
 $request->mode = "desc";
 
@@ -24,13 +24,10 @@ $request->get_summary = 0;
 $request->get_tags = 0;
 $request->get_votes = 0;
 
-$request->load_carousel = 1;
-
 if(isset($_GET["sponsor"])) $request->get_sponsor = 1;
 if(isset($_GET["summary"])) $request->get_summary = 1;
 if(isset($_GET["tags"])) $request->get_tags = 1;
 if(isset($_GET["votes"])) $request->get_votes = 1;
-if(isset($_GET["no-carousel"])) $request->load_carousel = 0;
 
 
 
@@ -38,16 +35,15 @@ if(isset($_GET["no-carousel"])) $request->load_carousel = 0;
 // main request specifiers - in URI
 
 $getreq = array(
-  $_GET["ctla"],
   $_GET["ctlb"],
-  $_GET["ctlc"],
-  $_GET["ctld"]
+  $_GET["ctlc"]
 );
 
 // found...
 $f_bill = 0; 
 $f_parl = 0;
 $f_parl_id = 0;
+
 
 
 foreach($getreq as $i => $q){
@@ -129,7 +125,6 @@ foreach($ok_if_positive_number_less_than as $k => &$max){
 
 
 $select = array(
-  "bills.number as bn",
   "concat (bills.chamber,'-',bills.number) as number",
   "bills.parl_id",
   "bills.parl_session",
@@ -219,8 +214,8 @@ $cond = array(
   "`chamber`='{$request->chamber}'"
 );
 
-// if($request->number) $cond[] = "`number`='{$request->number}'";
-// if($request->parl_id) $cond[] = "`bills`.`parl_id`='{$request->parl_id}'";
+if($request->number) $cond[] = "`number`='{$request->number}'";
+if($request->parl_id) $cond[] = "`bills`.`parl_id`='{$request->parl_id}'";
 
 
 
@@ -247,61 +242,21 @@ if(isset($_GET["subject"])){
 //  Coming together
 
 $select = implode(", ", $select);
+$cond = implode("&&",$cond);
 $joins = implode(" ", $joins);
 
 
-$query = "";
+//  Query the database
 
-if($request->load_carousel){
-
-
-  //  Loading the carousel involves grabbing other bills than 
-  //  the one specifically requested.
-
-  //  This is meant to perform the same query, but only grab one
-  //  column in order to determine the index of the row we want
-  //  in the result set. The idea is to get previous and next 
-  //  entries out of a set from an arbitrary non-numeric index...
-
-  //  If anyone knows how to do this in a single query, let me know.
-
-  $cond = implode("&&",$cond);
-  
-  $query = "from {$table} {$joins} where {$cond} {$group_by} 
-    order by {$request->sort} {$request->mode}";
-
-  $presult = DB::query("select `bills`.number {$query}");
-
-  $p = 0;
-
-  while($s = $presult->fetchColumn()){
-    if($s==$request->number)
-      break;
-    ++$p;
-  }
-
-  $request->p = intval(max(ceil($p-$request->n/2), 0));
-  
-  $Response->target_index = $p - $request->p;
-
-
-} else {
-
-  //  Forget the carousel and just get the actual results
-
-  $cond[] = "`bills`.number='{$request->number}'";
-  $cond = implode("&&",$cond);
-
-  $query = "from {$table} {$joins} where {$cond} {$group_by} 
-    order by {$request->sort} {$request->mode}";
-
-  $Response->target_index = 0;
-
-}
-
-
-$result = DB::query("select {$select} {$query} 
-  limit {$request->p},{$request->n}");
+$result = DB::query($query = "
+  select {$select}  
+  from {$table}
+  {$joins}
+  where {$cond}
+  {$group_by}
+  order by {$request->sort} {$request->mode}
+  limit {$request->p},{$request->n}
+");
 
 
 $Response->n_results = $result->rowCount();
@@ -310,19 +265,14 @@ $Response->bills = array();
 
 while($r = $result->fetchObject()){
   
-
   if(isset($r->sponsor)){
     $spons = lcname($r->sponsor);
     $r->sponsor_uri = "/mps/{$spons}/";
     $r->sponsor_img = "{$spons}-{$r->party}.jpg";
   }
   
-  if(isset($r->parl_session) && isset($r->number))
-    $r->object_uri = "/bills/{$r->parl_session}/{$r->number}/";
-    
-    
+  $r->object_uri = "/bills/{$r->parl_session}/{$r->number}/";
   $Response->bills[] = $r;
-
   
 }
 
