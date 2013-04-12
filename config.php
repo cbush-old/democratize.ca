@@ -23,3 +23,7 @@ if(!defined("BILLS_MAX_ENTRIES_PER_REQUEST"))
 if(!defined("BASE_URL")) 
   define("BASE_URL","http://localhost");
 
+//  Public root
+if(!defined("PUBLIC_ROOT"))
+  define("PUBLIC_ROOT","");
+
