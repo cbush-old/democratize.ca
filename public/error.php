@@ -1,8 +1,8 @@
 <?php
 
-require_once dirname(__FILE__)."/../config.php";
+require_once __DIR__."/../config.php";
 
-$code = array_pop(array_keys($_GET));
+$code = array_pop(array_keys($_GET)) or $code = getenv("REDIRECT_STATUS");
 
 $reason = isset($_GET[$code]) ? ($_GET[$code] or " ") : " ";
 
@@ -45,7 +45,7 @@ if(!isset($ok[$code]))
 
 header($reason, true, $code);
 
-$view_dir = dirname(__FILE__)."/../view/error/";
+$view_dir = __DIR__."/../view/error/";
 
 $head = str_replace(array(
     '$HTTP_CODE'
@@ -64,4 +64,5 @@ $body = str_replace(array(
   ),
   file_get_contents("{$view_dir}{$code}.html")
 );
+
 die($head.$body);
