@@ -16,8 +16,8 @@ index.php?ctla=$1&ctlb=$2&ctlc=$3&ctld=$4&format=$5 \
 
 </IfModule>
 
-ErrorDocument 400 /dmc/public/error.php?400
-ErrorDocument 404 /dmc/public/error.php?404
-ErrorDocument 405 /dmc/public/error.php?405
-ErrorDocument 500 /dmc/public/error.php?500
-ErrorDocument 503 /dmc/public/error.php?503
+ErrorDocument 400 /error.php?400
+ErrorDocument 404 /error.php?404
+ErrorDocument 405 /error.php?405
+ErrorDocument 500 /error.php?500
+ErrorDocument 503 /error.php?503
