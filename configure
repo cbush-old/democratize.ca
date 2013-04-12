@@ -2,7 +2,7 @@
 <?php
 
 // 5.2 compatibility
-$DIR = dirname(__FILE__)
+$DIR = dirname(__FILE__);
 
 include $DIR."/config.php";
 
