@@ -11,7 +11,7 @@ $path = "{$DIR}/public";
 $htaccess = file_get_contents("{$path}/.htaccess");
 $htaccess = preg_replace("/ErrorDocument.*\n/","",$htaccess);
 
-static $errors = array(400,404,405,500,503);
+static $errors = array(400,403,404,405,500,503);
 
 foreach($errors as $e)
   $htaccess .= "ErrorDocument {$e} ".PUBLIC_ROOT."/error.php\n";
