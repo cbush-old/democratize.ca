@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+RewriteRule ^\
+([^\.?/]*)/?\
+([^\.?/]*)/?\
+([^\.?/]*)/?\
+([^\.?/]*)/?\
+([^\.?/]*)/?\
+(?:\.(json|xml))?\
+$ \
+index.php?uri0=$1&uri1=$2&uri2=$3&uri3=$4&uri4=$5\
+&format=$6 \
+\
+[QSA,L]
+
+</IfModule>

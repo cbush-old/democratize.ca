@@ -1,7 +1,5 @@
 <?php
 
-require_once("../base/helpers.php");
-
 
 //  Parse a URI and return the name of the appropriate controller,
 //  or throw an HTTP_status exception

@@ -7,23 +7,19 @@ class HTTP_status extends Exception {
   public function __construct($code, $params = array()){
     $this->code = $code;
     
-    $msg = array();
-    foreach($params as $k=>$v)
-      $msg[] = "$k: {$v}";
+    if(is_array($params)){
     
-    $this->reason = implode("; ", $msg) || " ";
+      $msg = array();
+        foreach($params as $k=>$v)
+          $msg[] = "$k: {$v}";
+      
+      $msg = implode("; ", $msg);
+    
+    } else $msg = $params;
+    
+    $this->reason = $msg || " ";
     
   }
   
 }
 
-
-class MISSING_CONTROLLER extends Exception {
-
-  public $which;
-  
-  public function __construct($path){
-    $this->which = $path;
-  }
-
-}

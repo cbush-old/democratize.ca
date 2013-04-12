@@ -1,0 +1,27 @@
+
+URI function:
+
+bill 
+  (latest|popular|unpopular|featured|active|...)?
+  (mp-name)?
+  (subject)?
+  (parl)?(-(sess))? ((chamber)-?)?(number)?
+  
+  Mth.  Action
+  GET:  get bill(s)
+  
+  
+comment 
+  ((parl-sess chamber-number)|(comment id))?
+  (new|old|top|bottom)?
+  
+  GET     get comments for bill(s) or specific comment
+  POST    add comment to bill (specific bill required)
+  PUT     edit comment (comment id required)
+  DELETE  delete comment (comment id: specific, bill number: ALL ON BILL)
+  
+
+user (username)?
+
+vote ((parl-sess chamber-number)|(vote id))?
+

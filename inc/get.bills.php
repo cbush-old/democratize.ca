@@ -226,7 +226,7 @@ if($request->get_sponsor){
     "ridings.name as sponsor_riding",
   ));
   
-  $joins[] = "join bills on bills.id = bills_mps.bill_id";
+  $joins[] = "join bills_mps on bills.id = bills_mps.bill_id";
   $joins[] = "left join mps on mps.parl_id = bills_mps.sponsor_parl_id";
   $joins[] = "left join ridings_mps on mps.id = ridings_mps.mp_id";
   $joins[] = "left join ridings on ridings_mps.riding_id = ridings.id";
