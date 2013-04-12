@@ -4,4 +4,4 @@
 *.gif
 *.ico
 var/*
-
+*.local.*
