@@ -6,14 +6,18 @@ $DIR = dirname(__FILE__);
 
 include $DIR."/config.php";
 
-$htaccess = file_get_contents("{$DIR}/public/.htaccess");
-$htaccess = preg_replace("/ErrorDocument.*\n/","",$htaccess);
+foreach(array("{$DIR}/public","{$DIR}/public/api") as $path){
 
-static $errors = array(400,404,405,500,503);
+  $htaccess = file_get_contents("{$path}/.htaccess");
+  $htaccess = preg_replace("/ErrorDocument.*\n/","",$htaccess);
 
-foreach($errors as $e)
-  $htaccess .= "ErrorDocument {$e} ".PUBLIC_ROOT."/error.php\n";
-  
-file_put_contents($DIR."/public/.htaccess", $htaccess);
+  static $errors = array(400,404,405,500,503);
+
+  foreach($errors as $e)
+    $htaccess .= "ErrorDocument {$e} ".PUBLIC_ROOT."/error.php\n";
+    
+  file_put_contents("{$path}/.htaccess", $htaccess);
+
+}
 
 die(str_replace($DIR."/","",__FILE__.": success\n"));
