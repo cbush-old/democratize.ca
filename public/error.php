@@ -4,7 +4,12 @@ require_once __DIR__."/../config.php";
 
 $code = array_pop(array_keys($_GET)) or $code = getenv("REDIRECT_STATUS");
 
-$reason = isset($_GET[$code]) ? ($_GET[$code] or " ") : " ";
+$reason = " ";
+
+if(isset($_GET[$code])){
+  if(is_string($_GET[$code]) && strlen($_GET[$code]) > 1)
+    $reason = $_GET[$code];
+}
 
 static $ok = array(
   // 300 => "300 Multiple Choices",
