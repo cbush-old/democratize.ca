@@ -13,8 +13,4 @@ index.php?uri0=$1&uri1=$2&uri2=$3&uri3=$4&uri4=$5\
 \
 [QSA,L]
 </IfModule>
-ErrorDocument 400 /dmc/public/error.php
-ErrorDocument 404 /dmc/public/error.php
-ErrorDocument 405 /dmc/public/error.php
-ErrorDocument 500 /dmc/public/error.php
-ErrorDocument 503 /dmc/public/error.php
+
