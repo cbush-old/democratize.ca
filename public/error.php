@@ -1,6 +1,6 @@
 <?php
 
-require dirname(__FILE__)."/../config.php";
+require_once dirname(__FILE__)."/../config.php";
 
 $code = array_pop(array_keys($_GET));
 

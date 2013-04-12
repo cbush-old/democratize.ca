@@ -21,4 +21,5 @@ if(!defined("BILLS_MAX_ENTRIES_PER_REQUEST"))
 
 //  Base URL
 if(!defined("BASE_URL")) 
-  define("BASE_URL","/");
+  define("BASE_URL","http://localhost");
+
