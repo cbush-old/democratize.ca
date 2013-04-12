@@ -7,6 +7,10 @@ require_once("../base/codes.php");
 require_once("../base/db.php");
 require_once("../base/get_controller_name.php");
 
+
+die("<p>Experimental</p>");
+
+
 static $control_keys = array("ctla","ctlb","ctlc","ctld");
 
 $URI = array();
@@ -17,6 +21,8 @@ foreach($_GET as $k => $v){
   if(in_array($k, $control_keys) && $_GET[$k])
     $URI[] = $_GET[$k];
 }
+
+
 
 
 
@@ -54,3 +60,4 @@ try {
   header(" ", true, 500);
 
 }
+

@@ -17,7 +17,7 @@ class HTTP_status extends Exception {
     
     } else $msg = $params;
     
-    $this->reason = $msg || " ";
+    $this->reason = $msg ? $msg : " ";
     
   }
   
