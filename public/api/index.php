@@ -44,6 +44,7 @@ foreach($_GET as $k => $v)
 
 try {
 
+
   $cmd = $_GET["uri0"];
 
   $args = array(
@@ -54,16 +55,19 @@ try {
   $request = get_request($cmd, $args);
 
   $Response = $request->get_response();
-  
+
   preg_match("/^(html|json|xml)$/",$_GET["format"])
     and $format = $_GET["format"]
     or $format = "html";
 
-  include "../../inc/out.{$format}.php";
+  "../../inc/out.{$format}.php";
+
   
 } catch(HTTP_status $e){
   
-  header($e->reason, true, $e->code);
+  $_GET = array($e->code => $e->reason);
+  
+  require "../error.php";
   
 }
 
