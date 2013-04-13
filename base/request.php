@@ -21,7 +21,6 @@ class Request {
   // public function PUT($args)
   // public function DELETE($args)
   
-  
   public function get_response(){
   
     return $this->response;

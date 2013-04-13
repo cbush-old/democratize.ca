@@ -38,6 +38,7 @@ function get_request($cmd, $args){
   
 }
 
+
 //  crunch the user data from QUERY_STRING:
 
 foreach($_GET as $k => $v)
@@ -46,22 +47,20 @@ foreach($_GET as $k => $v)
 
 try {
 
+  if(!isset($_GET["uri"])) 
+    $_GET["uri"] = "help";
 
-  $cmd = $_GET["uri0"];
-
-  $args = array(
-    $_GET["uri1"], $_GET["uri2"], 
-    $_GET["uri3"], $_GET["uri4"]
-  );
+  $args = explode("/", $_GET["uri"]);
+  
+  $cmd = array_shift($args);
   
   $request = get_request($cmd, $args);
-
+  
   $Response = $request->get_response();
 
   preg_match("/^(html|json|xml)$/",$_GET["format"])
     and $format = $_GET["format"]
     or $format = "html";
-
 
   require "../../inc/out.{$format}.php";
 
