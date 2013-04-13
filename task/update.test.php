@@ -5,7 +5,7 @@ $argc > 1 or die("Usage: {$argv[0]} [command]\n");
 
 $cmd = $argv[1];
 
-require "updater.class.php";
+require __DIR__."/billimporter.php";
 
 $parl = 41;
 $sess = 1;
@@ -13,7 +13,6 @@ $sess = 1;
 $target = "http://www.parl.gc.ca/LegisInfo/Home.aspx?language=E&ParliamentSession={$parl}-{$sess}&Mode=1&download=xml";
 
 $Updater = new BillImporter($target);
-
 
 
 try {

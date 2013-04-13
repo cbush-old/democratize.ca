@@ -10,7 +10,7 @@ $DIR = dirname(__FILE__);
 require_once $DIR."/../base/db.php";
 require_once $DIR."/../base/codes.php";
 
-$datapath = $DIR."/data/mpnames.txt";
+$datapath = $DIR."/../var/mpnames.txt";
 
 if(!file_exists($datapath) or (time() - filemtime($datapath) > 86400)){
   
