@@ -123,8 +123,7 @@ class Bill_request extends Request {
     $joins = array(
       "left join alias_mp on alias_mp.alias = bill.mp_alias",
       "left join mp on mp.lcname = alias_mp.mp_lcname",
-      "left join mp_riding on mp_riding.mp_lcname = mp.lcname",
-      "left join riding on riding.lcname = mp_riding.riding_lcname",
+      "left join riding on riding.lcname = mp.riding_lcname",
       "left join summary on summary.pscn = bill.pscn",
       "left join bill_subject on bill_subject.pscn = bill.pscn",
       "left join subject on subject.id = bill_subject.subject_id"
