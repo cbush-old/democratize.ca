@@ -70,7 +70,6 @@ class Bill_request extends Request {
     
     foreach($args as $arg){
       foreach($arg_func as $k => $f){
-        echo $k;
         if($f($arg, $req)){
           unset($arg_func[$k]);
           continue(2);
@@ -178,7 +177,7 @@ class Bill_request extends Request {
     
 
     $query = "select {$select} from {$table} {$joins} where {$cond} "
-      ."{$group_by} order by {$order} {$limit}";
+      . "{$group_by} order by {$order} {$limit}";
     
     
     
