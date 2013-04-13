@@ -1,0 +1,6 @@
+#!/bin/bash
+curl -s "http://www.parl.gc.ca/MembersOfParliament/MainMPsCompleteList.aspx?TimePeriod=Current&Language=E" | grep ProfileMP.aspx | while read x; do 
+  echo -e "`echo $x | cut -d '>' -f 3 | cut -d '<' -f 1 | cut -d '(' -f 1`:\
+  `echo $x | cut -d '>' -f 7 | cut -d '<' -f 1 ` : \
+  `echo $x | cut -d '>' -f 13 | cut -d '<' -f 1 `"
+done;
