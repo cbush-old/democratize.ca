@@ -20,92 +20,40 @@ class Bill_request extends Request {
   
   public function GET($args){
   
-    $request = new StdClass();
-    $request->chamber = "C"; // some defaults
-    $request->number = ""; 
-    $request->parliament = "41";
-    $request->session = "1";
-    $request->parl_id = "";
-    $request->party = "";
-    $request->subject = "";
+    $req = new StdClass();
+    $req->chamber = "C"; // some defaults
+    $req->number = ""; 
+    $req->parl = "41";
+    $req->sess = "1";
+    
+    $req->party = "";
+    $req->subject = "";
+    
+    $req->sort = "updated";
+    $req->mode = "desc";
 
-    $request->p = 0;  // page (offset of the result set)
-    $request->n = -1;  // number of results
-    $request->sort = "updated";
-    $request->mode = "desc";
-
-    $request->get_sponsor = 1;
-    $request->get_summary = 0;
-    $request->get_tags = 0;
-    $request->get_votes_total = 0;
-    $request->get_votes_yes = 0;
-    $request->get_votes_no = 0;
-
-    $request->load_carousel = 1;
-  
-    $rx = self::$uri_regex;
+    $f_ps = $f_cn = $f_s = $f_party = false;
     
     foreach($args as $arg){
-    
-      $matches = array();
       
-      if(isset(self::$modes[$arg])){
-      
-        switch($arg){
-        
-          case "latest":
-            $request->sort = "updated";
-            $request->mode = "desc";
-            break;
-            
-          case "popular":  
-            $request->get_votes_yes = true;
-            $request->sort = "votes_yes";
-            $request->mode = "desc";
-            break;
-            
-          case "unpopular":
-            $request->get_votes_no = true;
-            $request->sort = "votes_no";
-            $request->mode = "desc";
-            break;
-          
-          case "active":
-            $request->get_votes_total = true;
-            $request->sort = "votes_total";
-            $request->mode = "desc";
-            break;
-
-          case "featured":
-            break;
-            
-          case "tags":
-            $request->get_tags = 1;
-            break;
-            
-        }
-        
-      } else if(isset(self::$parties[$arg])){
-        
-        $request->get_sponsor = 1;
-        $request->party = $arg;
-        
-      } else if(preg_match($rx["name"], $arg)){
-        
-        $request->name = $arg;
-        
-      } else if(preg_match($rx["parl_sess"], $arg, $matches)){
-      
-        if(isset($matches[1])) $request->parliament = $matches[1];
-        if(isset($matches[2])) $request->session = $matches[2];
-        
-      } else if(preg_match($rx["bill_number"], $arg, $matches)){
-      
-        if(isset($matches[1])) $request->chamber = strtoupper($matches[1]);
-        if(isset($matches[2])) $request->number = $matches[2];
-      
+      if(!$f_ps && preg_match("/^([0-9]{2})(?:-([1-9]))?$/", $arg, $match)){
+        if(isset($match[1])) $req->parl = $match[1];
+        if(isset($match[2])) $req->sess = $match[2];
+        $f_ps = true;
+      } else if(!$f_cn && preg_match("/^(c|s|t|u)(?:-([1-9][0-9]{0,4}))?$/", $arg, $match)){
+        if(isset($match[1])) $req->chamber = strtoupper($match[1]);
+        if(isset($match[2])) $req->number = $match[2];
+        $f_cn = true;
+      } else if(!$f_s && preg_match("/^([a-z-]{4,})$/", $arg)){
+        $req->subject = $arg;
+        $f_s = 1;
+      } else if(!$f_party && isset(self::$parties[$arg])){
+        $req->party = $arg;
+        $f_party = 1;
       }
+    
     }
+    
     
     //  Query parts
     
@@ -113,190 +61,112 @@ class Bill_request extends Request {
     /////////
     
     $select = array(
-      "concat (bills.chamber,'-',bills.number) as number",
-      "bills.parl_id",
-      "bills.parl_session",
-      "bills.introduced",
-      "bills.updated",
-      "bills.type",
-      "bills.status"
+      "bill.pscn",
+      "bill.parl",
+      "bill.sess",
+      "bill.chamber",
+      "bill.number",
+      "bill.introduced",
+      "bill.updated",
+      "bill.type",
+      "bill.status",
+      "bill.short_title_en",
+      "bill.short_title_fr",
+      "bill.title_en",
+      "bill.title_fr",
+      "bill.mp_alias",
+      "concat(mp.first_name,' ',mp.last_name) as sponsor",
+      "riding.name as riding",
+      "riding.province as province",
+      "mp.party as party",
+      "(select sum(vote_yes) from vote where vote.pscn = bill.pscn) as votes_yes",
+      "(select sum(vote_no) from vote where vote.pscn = bill.pscn) as votes_no",
+      "summary.summary_en",
+      "summary.summary_fr",
+      "group_concat(distinct subject.name_en separator ', ') as tags_en",
+      "group_concat(distinct subject.name_fr separator ', ') as tags_fr",
+      "(select count(*) from comment where comment.pscn = bill.pscn) as n_comments"
     );
     
-    foreach(active_lang_array() as $lang){
-      $select[] = "bills.short_title_{$lang}";
-      $select[] = "bills.title_{$lang}";
-    }
-    
-    if($request->get_votes_yes){
-
-      $select[] = "(
-        select sum(vote&1)
-        from `user_votes`
-        where bills.id = user_votes.bill_id
-      ) as votes_yes";
-      
-    }
-
-    if($request->get_votes_no){
-
-      $select[] = "(
-        select round(sum(vote&2)/2)
-        from `user_votes`
-        where bills.id = user_votes.bill_id
-      ) as votes_no";
-      
-    }
-
-    if($request->get_votes_total){
-
-      $select[] = "(
-        select count(*)
-        from `user_votes`
-        where bills.id = user_votes.bill_id
-      ) as votes_total";
-      
-    }
-
     // FROM
     ///////
     
-    $table = "bills";
+    $table = "bill";
+
+    // JOIN
+    ///////
     
+    $joins = array(
+      "left join alias_mp on alias_mp.alias = bill.mp_alias",
+      "left join mp on mp.lcname = alias_mp.mp_lcname",
+      "left join mp_riding on mp_riding.mp_lcname = mp.lcname",
+      "left join riding on riding.lcname = mp_riding.riding_lcname",
+      "left join summary on summary.pscn = bill.pscn",
+      "left join bill_subject on bill_subject.pscn = bill.pscn",
+      "left join subject on subject.id = bill_subject.subject_id"
+    );
     
     // WHERE
     ////////
     
-    $cond = array(
-      "`parl_session`='{$request->parliament}-{$request->session}'",
-      "`chamber`='{$request->chamber}'"
-    ); 
-    
-    if($request->party) 
-      $cond[] = "party='{$request->party}'";
-    
-    if(isset($_GET["subject"])){
-      
-      $subj = explode(",",$_GET["subject"]);
-      $subcond = array();
-      foreach($subj as $s){
-        $s = dmchash($s);
-        $subcond[] = "bills.id IN ( select bill_id from bills_subjects
-          where subject_id = '{$s}' )";
-      }
-      $cond[] = "(".implode("||",$subcond).")";
-      
-    }
-    
-    if($request->number) 
-      $cond[] = "`bills`.number='{$request->number}'";
-    
-    
-    // JOIN
-    ///////
-    
-    $joins = array();
-    
-    if($request->get_sponsor){
+    $cond = array();
+    $req->parl and $cond[] = "`parl`='{$req->parl}'";
+    $req->sess and $cond[] = "`sess`='{$req->sess}'";
+    $req->chamber and $cond[] = "`chamber`='{$req->chamber}'";
+    $req->number and $cond[] = "`number`='{$req->number}'";
+    $req->party and $cond[] = "`party`='{$req->party}'";
+    $req->subject and $cond[] = 
+      "bill.pscn IN (select pscn from bill_subject
+        join subject on subject.id = bill_subject.subject_id
+        join alias_subject on alias_subject.subject_id = subject.id
+        where alias = '{$req->subject}'
+        group by subject.id
+      )";
 
-      $select = array_merge($select, array(
-        "concat (mps.first_name,\" \",mps.last_name) as sponsor",
-        "mps.party",
-        "ridings.name as sponsor_riding",
-      ));
-      
-      $joins[] = 
-        "join bills_mps on bills.id = bills_mps.bill_id "
-        ."left join mps on mps.parl_id = bills_mps.sponsor_parl_id "
-        ."left join ridings_mps on mps.id = ridings_mps.mp_id "
-        ."left join ridings on ridings_mps.riding_id = ridings.id";
-
-    }
-    
-    if($request->get_summary){
-
-      foreach(active_lang_array() as $lang)
-        $select[] = "bill_summaries.summary_{$lang}";
-      
-      $joins[] = 
-        "left join bill_summaries on bills.id = bill_summaries.bill_id";
-
-    }
-
-    if($request->get_tags){
-     
-      foreach(active_lang_array() as $lang){
-        $select[] = "
-          group_concat(
-            distinct
-            subjects.name_{$lang}
-            separator ', '
-          ) as tags_{$lang}
-        ";
-      }
-        
-      $joins[] = 
-        "left join `bills_subjects` on bills_subjects.bill_id = bills.id "
-        ."left join `subjects` on bills_subjects.subject_id = subjects.id";
-
-    }
-  
-  
     // GROUP BY
     ///////////
     
-    $group_by = "group by bills.id";
+    $group_by = "group by bill.pscn";
+
+    // ORDER BY
+    ///////////
     
-    
+    $order = array(
+      "bill.parl",
+      "bill.sess",
+      "bill.chamber",
+      "bill.number"
+    );
     
     // LIMIT
     ////////
     
-    
-    if(isset($_GET["n"])){
-      $n = $_GET["n"];
-      if(is_numeric($n) && $n > 0)
-        $limit = "limit {$n}";
-    } else {
-      $limit = "";
-    }
+    $limit = "limit 100";
     
     
   
-  
+
     $select = implode(",", $select);
     $joins = implode(" ", $joins);
     $cond = implode("&&",$cond);
-  
-  
-  
+    $order = implode(",",$order);
+    
+
+    $query = "select {$select} from {$table} {$joins} where {$cond} "
+      ."{$group_by} order by {$order} {$limit}";
     
     
-    $result = DB::query($q = 
-      "select {$select} from {$table} {$joins} ".
-      "where {$cond} {$group_by} ".
-      "order by {$request->sort} {$request->mode} ".
-      "{$limit}"
-    );
-  
+    
+    $result = DB::query($query);
   
     
-    
+
     $this->response = new StdClass;
     $this->response->n_results = $result->rowCount();
     $this->response->bills = array();
     
     while($r = $result->fetchObject()){
 
-      if(isset($r->sponsor)){
-        $spons = lcname($r->sponsor);
-        $r->sponsor_uri = "/mps/{$spons}/";
-        $r->sponsor_img = "{$spons}-{$r->party}.jpg";
-      }
-      
-      if(isset($r->parl_session) && isset($r->number))
-        $r->object_uri = "/bills/{$r->parl_session}/{$r->number}/";
-        
-        
       $this->response->bills[] = $r;
       
     }

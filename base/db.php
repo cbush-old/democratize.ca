@@ -7,22 +7,23 @@ class DB {
 
   public static function get($w = false){
   
-    static $reader = null;
-    static $writer = null;
+    static $reader = null, $writer = null, $opts = array(
+      PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8",
+      PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+    );
     
     if(!$w){
+    
       if(!$reader)
-        $reader = new PDO (DB_PUB_DSN, 
-          DB_READ_USER, DB_READ_PASS, 
-          array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
-        );
+        $reader = new PDO (DB_PUB_DSN, DB_READ_USER, DB_READ_PASS, $opts);
       return $reader;
+      
     } else {
+    
       if(!$writer)
-        $writer = new PDO (DB_PUB_DSN, DB_WRITE_USER, DB_WRITE_PASS,
-          array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
-        );
+        $writer = new PDO (DB_PUB_DSN, DB_WRITE_USER, DB_WRITE_PASS, $opts);
       return $writer;
+      
     }
     
   }
@@ -30,6 +31,7 @@ class DB {
   public static function query($query){
     return self::get()->query($query);
   }
+
 
 }
 

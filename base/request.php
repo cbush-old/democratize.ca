@@ -1,5 +1,19 @@
 <?php
 
+
+// Save and return the HTTP request body:
+
+function request_body(){
+  
+  static $data = null;
+  if(!$data)
+    $data = file_get_contents('php://input');
+  return $data;
+  
+}
+
+
+
 class Request {
 
   public $method;
@@ -11,11 +25,11 @@ class Request {
       throw new HTTP_status (405, array("Allow:",$this->get_allow_str()));
     
     $this->response = new StdClass;
-    $this->method = $method;
     $this->$method($args);
   
   }
   
+  // //  Implement these in your subclass to enable each method
   // public function GET($args)
   // public function POST($args)
   // public function PUT($args)
@@ -28,12 +42,17 @@ class Request {
   }
   
   private function get_allow_str(){
+    
+    static $methods = array("GET","POST","PUT","DELETE");
+    
     $allow = array();
-    method_exists($this,"GET") and $allow[] = "GET";
-    method_exists($this,"POST") and $allow[] = "POST";
-    method_exists($this,"PUT") and $allow[] = "PUT";
-    method_exists($this,"DELETE") and $allow[] = "DELETE";
+    
+    foreach($methods as $m)
+      if(method_exists($this,$m)) 
+        $allow[] = $m;
+      
     return implode(", ", $allow);
+  
   }
   
 }
