@@ -3,14 +3,14 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
+RewriteCond %{REQUEST_FILENAME} -f [NC,OR]
+RewriteCond %{REQUEST_FILENAME} -d [NC]
+RewriteRule .* - [L]
+
 RewriteRule ^\
-([^\.?/]*)/?\
-([^\.?/]*)/?\
-([^\.?/]*)/?\
-([^\.?/]*)/?\
-(?:\.(json|xml))?\
+([^\.?]*)/?\
 $ \
-index.php?ctla=$1&ctlb=$2&ctlc=$3&ctld=$4&format=$5 \
+index.php?uri=$1 \
 \
 [QSA,L]
 

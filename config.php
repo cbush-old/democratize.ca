@@ -9,9 +9,16 @@ if(file_exists(dirname(__FILE__)."/config.local.php"))
 //  or download a copy of the database onto your local server
 //  and change this information accordingly.
 
-if(!defined("DB_DSN")) define("DB_DSN", "mysql:dbname=dmc_public;host=mysql.democratize.ca");
-if(!defined("DB_USER")) define("DB_USER", "dmc_reader");
-if(!defined("DB_PASS")) define("DB_PASS", "Antidisestablishmentarian");
+if(!defined("DB_PUB_DSN")) 
+  define("DB_PUB_DSN", "mysql:dbname=dmc_public;host=mysql.democratize.ca");
+
+if(!defined("DB_READ_USER")) define("DB_READ_USER", "dmc_reader");
+if(!defined("DB_READ_PASS")) define("DB_READ_PASS", "Antidisestablishmentarian");
+
+// Define these in your config.local.php
+if(!defined("DB_WRITE_USER")) define("DB_WRITE_USER", "dmc_writer");
+if(!defined("DB_WRITE_PASS")) define("DB_WRITE_PASS", "??????????");
+
 
 
 //  Limit the number of bills per request (set by n=___ in the query string)

@@ -1,5 +1,25 @@
 #!/usr/bin/env php
 <?php
+/*
+
+  In order to get the error handlers to work, run this file.
+  
+  You will need to override the PUBLIC_ROOT definition in
+  the config.php file if "http://yourlocalhost/" does not =
+  "thisdirectory/public/".
+  
+  Make a file called config.local.php with the following:
+  
+  <?php
+  define("PUBLIC_ROOT","/some/path/thisdirectory/public");
+  
+  
+  Unless your PUBLIC_ROOT is / (in which case you don't need
+  to override this at all), PUBLIC_ROOT must have a slash(/) 
+  at the beginning and must NOT have one at the end.
+  
+  
+*/
 
 // 5.2 compatibility
 $DIR = dirname(__FILE__);

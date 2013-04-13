@@ -301,9 +301,6 @@ class Bill_request extends Request {
       
     }
     
-    
-    
-    
   }
 
 }

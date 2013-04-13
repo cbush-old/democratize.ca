@@ -10,6 +10,7 @@ require_once("../../base/db.php");
 
 require("../../base/request.php");
 require("../../request/bill.php");
+require("../../request/mp.php");
 require("../../request/comment.php");
 require("../../request/help.php");
 require("../../request/vote.php");
@@ -20,6 +21,7 @@ function get_request($cmd, $args){
 
   static $action = array(
     'bill' => 'Bill_request',
+    'mp' => 'Mp_request',
     'comment' => 'Comment_request',
     'help' => 'Help_request',
     'vote' => 'Vote_request',
@@ -60,7 +62,8 @@ try {
     and $format = $_GET["format"]
     or $format = "html";
 
-  "../../inc/out.{$format}.php";
+
+  require "../../inc/out.{$format}.php";
 
   
 } catch(HTTP_status $e){
