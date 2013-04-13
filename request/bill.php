@@ -29,29 +29,54 @@ class Bill_request extends Request {
     $req->party = "";
     $req->subject = "";
     
-    $req->sort = "updated";
-    $req->mode = "desc";
-
-    $f_ps = $f_cn = $f_s = $f_party = false;
+    $req->order = array();
     
-    foreach($args as $arg){
+    // define an array of callbacks for checking arguments.
+    // key is just a description.
+    $arg_func = array(
       
-      if(!$f_ps && preg_match("/^([0-9]{2})(?:-([1-9]))?$/", $arg, $match)){
+      "parl-sess" => function($arg, &$req){
+        if(!preg_match("/^([0-9]{2})(?:-([1-9]))?$/", $arg, $match)) 
+          return false;
         if(isset($match[1])) $req->parl = $match[1];
         if(isset($match[2])) $req->sess = $match[2];
-        $f_ps = true;
-      } else if(!$f_cn && preg_match("/^(c|s|t|u)(?:-([1-9][0-9]{0,4}))?$/", $arg, $match)){
+        return true;
+      },
+      
+      "chamber-number" => function($arg, &$req){
+        if(!preg_match("/^(c|s|t|u)(?:-([1-9][0-9]{0,4}))?$/", $arg, $match)) 
+          return false;
         if(isset($match[1])) $req->chamber = strtoupper($match[1]);
         if(isset($match[2])) $req->number = $match[2];
-        $f_cn = true;
-      } else if(!$f_s && preg_match("/^([a-z-]{4,})$/", $arg)){
-        $req->subject = $arg;
-        $f_s = 1;
-      } else if(!$f_party && isset(self::$parties[$arg])){
-        $req->party = $arg;
-        $f_party = 1;
+        return true;
+      },
+      
+      "party" => function($arg, &$req){
+        if(!isset(self::$parties[$arg])) 
+          return false;
+        return $req->party = $arg;
+      },
+      
+      "sort" => function($arg, &$req){
+        if($arg=="active") return $req->order[] = "updated desc";
+        if($arg=="newest") return $req->order[] = "introduced desc";
+        if($arg=="oldest") return $req->order[] = "introduced asc";
+        if($arg=="popular") return $req->order[] = "votes_yes desc";
+        if($arg=="unpopular") return $req->order[] = "votes_no desc";
+        return false;
       }
     
+    );
+    
+    foreach($args as $arg){
+      foreach($arg_func as $k => $f){
+        echo $k;
+        if($f($arg, $req)){
+          unset($arg_func[$k]);
+          continue(2);
+        }
+      }
+      $this->response->bad_args[] = $arg;
     }
     
     
@@ -161,7 +186,6 @@ class Bill_request extends Request {
   
     
 
-    $this->response = new StdClass;
     $this->response->n_results = $result->rowCount();
     $this->response->bills = array();
     

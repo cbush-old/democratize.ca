@@ -20,6 +20,14 @@ static $action = array(
   'vote' => 'Vote_request',
 );
 
+static $alias = array(
+  "active" => "bill active",
+  "newest" => "bill newest",
+  "oldest" => "bill oldest",
+  "popular" => "bill popular",
+  "unpopular" => "bill unpopular"
+);
+
 //  load the request classes which handle the actions
 
 foreach(array_keys($action) as $a)
@@ -42,9 +50,14 @@ try {
     $_GET["uri"] = "help";
 
     
-  $args = explode("/", $_GET["uri"]);
+  $args = explode("/", preg_replace("/[\/]+$/","",$_GET["uri"]));
   
   $cmd = array_shift($args);
+
+  if(isset($alias[$cmd])){
+    $args = array_merge(explode(" ", $alias[$cmd]), $args);
+    $cmd = array_shift($args);
+  }
 
   if(!isset($action[$cmd])) 
     throw new HTTP_status(400);
@@ -75,5 +88,5 @@ try {
   
 }
 
-// file_get_contents('php://input');
+
   

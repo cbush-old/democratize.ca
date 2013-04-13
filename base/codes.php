@@ -71,7 +71,15 @@ function decode_bill_id($code){
 
 function lcname($in){
   return 
-    preg_replace("/[^a-z-0-9]/","",strtolower(str_replace(" ","-",$in)));
+    preg_replace("/[^a-z-0-9]/","",
+      strtolower(
+        str_replace(array(" ","."),"-",
+          str_replace(". ","-",
+            iconv("UTF-8", "ASCII//TRANSLIT", $in)
+          )
+        )
+      )
+    );
 }
 
 function hash32($in){
