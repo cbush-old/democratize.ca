@@ -2,10 +2,6 @@
 
 class Bill_request extends Request {
   
-  static $parties = array(
-    "cpc"=>1,"lpc"=>1,"ndp"=>1,"bq"=>1,"gp"=>1,"pc"=>1,"ind"=>1
-  );
-
   public function GET($args){
   
     $req = new StdClass();
@@ -40,7 +36,10 @@ class Bill_request extends Request {
       },
       
       "party" => function($arg, &$req){
-        if(!isset(self::$parties[$arg])) 
+        static $parties = array(
+          "cpc"=>1,"lpc"=>1,"ndp"=>1,"bq"=>1,"gp"=>1,"pc"=>1,"ind"=>1
+        );
+        if(!isset($parties[$arg])) 
           return false;
         return $req->party = $arg;
       },
