@@ -173,12 +173,8 @@ class Bill_request extends Request {
     // ORDER BY
     ///////////
     
-    $order = array(
-      "bill.parl",
-      "bill.sess",
-      "bill.chamber",
-      "bill.number"
-    );
+    $order = array_merge($req->order, array("updated desc"));
+    
     
     // LIMIT
     ////////
