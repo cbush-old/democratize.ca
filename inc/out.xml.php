@@ -1,6 +1,6 @@
 <?php
 
-header("Content-type:text/xml");
+header("Content-type:text/xml; charset:ISO-8859-1;");
 
 $doc = new DOMDocument('1.0', 'iso-8859-1');
 
