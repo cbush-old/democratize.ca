@@ -14,8 +14,8 @@ static $action = array(
   'bill' => 'Bill_request',
   'comment' => 'Comment_request',
   'help' => 'Help_request',
-  'mp' => 'Mp_request',
-  'subject' => 'Subject_request',
+  'mps' => 'Mps_request',
+  'subjects' => 'Subjects_request',
   'summary' => 'Summary_request',
   'user' => 'User_request',
   'vote' => 'Vote_request',
@@ -26,7 +26,9 @@ static $alias = array(
   "newest" => "bill newest",
   "oldest" => "bill oldest",
   "popular" => "bill popular",
-  "unpopular" => "bill unpopular"
+  "unpopular" => "bill unpopular",
+  "mp" => "bill mp",
+  "subject" => "bill subject",
 );
 
 //  load the request classes which handle the actions

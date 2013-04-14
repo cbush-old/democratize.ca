@@ -53,27 +53,28 @@ class Bill_request extends Request {
         return false;
       },
       
-      "expectation" => function($arg, &$req){
-        if($arg=="subject") return $req->expect = 1;
-        if($arg=="mp") return $req->expect = 2;
-        return false;
-      },
-      
       "subject" => function($arg, &$req){
-        if($req->expect!=1||!preg_match("/^[a-z-]{4,}$/",$arg)) 
+        if($req->expect!=2||!preg_match("/^[a-z-]{4,}$/",$arg)) 
           return false;
+        $req->expect = 0;
         return $req->subject = $arg;
       },
       
       "mp" => function($arg, &$req){
-        if($req->expect!=2 || !preg_match("/^[a-z-]{6,}$/",$arg)) 
+        if($req->expect!=1||!preg_match("/^[a-z-]{6,}$/",$arg)) 
           return false;
-        $req->expect = "";
+        $req->expect = 0;
         return $req->mp = $arg;
       }
     );
     
+    $pre = array("mp"=>1,"subject"=>2);
+    
     foreach($args as $arg){
+      if(isset($pre[$arg])){
+        $req->expect = $pre[$arg];
+        continue;
+      }
       foreach($arg_func as $k => $f){
         if($f($arg, $req)){
           unset($arg_func[$k]);
@@ -110,27 +111,28 @@ class Bill_request extends Request {
       "mp.party as party",
       "(select sum(vote_yes) from vote where vote.pscn = bill.pscn) as votes_yes",
       "(select sum(vote_no) from vote where vote.pscn = bill.pscn) as votes_no",
-      "summary.summary_en",
-      "summary.summary_fr",
-      "group_concat(distinct alias_subject.alias separator ', ') as tags_en",
-      "group_concat(distinct subject.name_fr separator ', ') as tags_fr",
-   
       "(select count(*) from comment where comment.pscn = bill.pscn) as n_comments"
     );
     
-    /*
-       "(select
-        concat('[',
-        group_concat(distinct 
-          concat(
-            '{\"en\":\"',subject.name_en,'\",\"fr\":\"',subject.name_fr,'\"}'
-          ) separator ',')
-        ,']')
+    static $tag_jsonifier = "concat('[',group_concat(distinct concat(
+      '{\"en\":\"',subject.name_en,'\",\"fr\":\"',subject.name_fr,'\"}'
+      ) separator ','),']')";
+
+    if($req->subject){
+    
+      $select[] = "(select
+        {$tag_jsonifier}
         from bill_subject
         join subject on subject.id = bill_subject.subject_id
         where bill_subject.pscn = bill.pscn
-      ) as tags",
-    */
+      ) as tags";
+    
+    } else {
+    
+      $select[] = "{$tag_jsonifier} as tags";
+   
+    }
+    
     
     // FROM
     ///////
@@ -144,7 +146,7 @@ class Bill_request extends Request {
       "left join alias_mp on alias_mp.alias = bill.mp_alias",
       "left join mp on mp.lcname = alias_mp.mp_lcname",
       "left join riding on riding.lcname = mp.riding_lcname",
-      "left join summary on summary.pscn = bill.pscn",
+      // "left join summary on summary.pscn = bill.pscn",
       "left join bill_subject on bill_subject.pscn = bill.pscn",
       "left join subject on subject.id = bill_subject.subject_id",
       "left join alias_subject on alias_subject.subject_id = subject.id"
@@ -204,7 +206,11 @@ class Bill_request extends Request {
     $this->response->bills = array();
     
     while($r = $result->fetchObject()){
-
+      
+      if($r->tags){
+        $r->tags = json_decode($r->tags);
+      
+      }
       $this->response->bills[] = $r;
       
     }
