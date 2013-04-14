@@ -73,7 +73,7 @@ function lcname($in){
   return 
     preg_replace("/[^a-z-0-9]/","",
       strtolower(
-        str_replace(array(" ","."),"-",
+        str_replace(array(" ",".","/"),"-",
           str_replace(". ","-",
             iconv("UTF-8", "ASCII//TRANSLIT", $in)
           )

@@ -15,6 +15,7 @@ static $action = array(
   'comment' => 'Comment_request',
   'help' => 'Help_request',
   'mp' => 'Mp_request',
+  'subject' => 'Subject_request',
   'summary' => 'Summary_request',
   'user' => 'User_request',
   'vote' => 'Vote_request',
