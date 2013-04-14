@@ -66,6 +66,7 @@ class Bill_request extends Request {
         $req->expect = 0;
         return $req->mp = $arg;
       }
+      
     );
     
     $pre = array("mp"=>1,"subject"=>2);
@@ -182,7 +183,7 @@ class Bill_request extends Request {
     // LIMIT
     ////////
     
-    $limit = "";
+    $limit = "limit 100";
     
     
   
