@@ -13,7 +13,6 @@ require_once("../../base/request.php");
 static $action = array(
   'bill' => 'Bill_request',
   'comment' => 'Comment_request',
-  'help' => 'Help_request',
   'mps' => 'Mps_request',
   'subjects' => 'Subjects_request',
   'summary' => 'Summary_request',
@@ -43,6 +42,23 @@ foreach(array_keys($action) as $a)
 foreach($_GET as $k => $v)
   $_GET[$k] = feels_good_man($v);
   
+
+if(!isset($_GET["format"])) $_GET["format"] = "html";
+
+
+class Help_request extends Request {
+  
+  public function GET($args){
+    
+    global $action;
+    
+    $this->response->commands = implode(", ", array_keys($action));
+  
+  }
+
+}
+
+$action['help'] = 'Help_request';
 
 
 
