@@ -2,18 +2,18 @@
 
 header("Content-type:text/xml; charset:ISO-8859-1;");
 
-$doc = new DOMDocument('1.0', 'iso-8859-1');
+$doc = new DOMDocument('1.0', 'ISO-8859-1');
 
-
-function xml_encode(&$node, $k, $v){
+function xml_encode(&$node, $k, $v){//, $v){
   
   global $doc;
   
+  $n = $doc->createElement("{$k}");
+  
   if(is_object($v)||is_array($v)){
   
-    $n = $doc->createElement($k);
-    
     foreach($v as $kk=>$vv){
+    
       if(is_numeric($kk)){
         
         $singular_k = substr($k,-1)=="s"?
@@ -32,7 +32,7 @@ function xml_encode(&$node, $k, $v){
     }
   } else {
   
-    $n = $doc->createElement($k, $v);
+    $n->appendChild($doc->createTextNode($v));
   
   }
 
