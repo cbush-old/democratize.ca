@@ -67,12 +67,15 @@ class Vote_request extends Request {
     $cn = array_shift($arg);
     
     if(!preg_match("/^[1-9][0-9]-[1-9]$/",$ps)
-    ||!preg_match("/^[cstu]-[1-9][0-9]{0,4}$/",$ps))
-      throw HTTP_status(400);
+    ||!preg_match("/^(c|s|t|u)-[1-9][0-9]{0,4}$/",$cn))
+      throw new HTTP_status(400);
     
     $pscn = "{$ps}-{$cn}";
     
     
+    
+    
+    $this->response = $_SERVER["REMOTE_ADDR"];
     
     
   }

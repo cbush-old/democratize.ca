@@ -1,6 +1,6 @@
 <?php
 
-class Mps_request extends Request {
+class Mp_request extends Request {
 
   public function GET($args){
     

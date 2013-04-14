@@ -1,6 +1,6 @@
 <?php
 
-class Subjects_request extends Request {
+class Subject_request extends Request {
   
   public function GET($args){
       

@@ -13,8 +13,10 @@ require_once("../../base/request.php");
 static $action = array(
   'bill' => 'Bill_request',
   'comment' => 'Comment_request',
-  'mps' => 'Mps_request',
-  'subjects' => 'Subjects_request',
+  'event' => 'Event_request',
+  'mp' => 'Mp_request',
+  'publication' => 'Publication_request',
+  'subject' => 'Subject_request',
   'summary' => 'Summary_request',
   'user' => 'User_request',
   'vote' => 'Vote_request',
@@ -26,8 +28,6 @@ static $alias = array(
   "oldest" => "bill oldest",
   "popular" => "bill popular",
   "unpopular" => "bill unpopular",
-  "mp" => "bill mp",
-  "subject" => "bill subject",
 );
 
 //  load the request classes which handle the actions
