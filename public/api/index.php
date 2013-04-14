@@ -50,9 +50,13 @@ class Help_request extends Request {
   
   public function GET($args){
     
-    global $action;
+    global $action, $alias;
     
-    $this->response->commands = implode(", ", array_keys($action));
+    $commands = array_merge(array_keys($action),array_keys($alias));
+    
+    sort($commands);
+    
+    $this->response->commands = $commands;
   
   }
 
