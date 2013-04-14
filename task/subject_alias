@@ -1,0 +1,35 @@
+#!/usr/bin/env php
+<?php
+
+die("Disabled...\n");
+
+$DIR = dirname(__FILE__);
+
+require_once $DIR."/../base/db.php";
+require_once $DIR."/../base/codes.php";
+
+$r = DB::query("select * from subject");
+
+$values = array();
+
+while($row = $r->fetchObject()){
+
+  $en = lcname($row->name_en);
+  $fr = lcname($row->name_fr);
+  
+  $values[] = "(".
+    DB::get(1)->quote($row->id).",".
+    DB::get(1)->quote($en).")";
+  
+  if($en==$fr) continue;
+  
+  $values[] = "(".
+    DB::get(1)->quote($row->id).",".
+    DB::get(1)->quote($fr).")";
+  
+}
+
+$values = implode(",",$values);
+
+DB::get(1)->query("insert into alias_subject (subject_id, alias) values {$values}");
+

@@ -1,0 +1,67 @@
+#!/usr/bin/env php
+<?php
+
+die("Probably no need to use this...\n");
+
+
+
+$DIR = dirname(__FILE__);
+
+require_once $DIR."/../base/db.php";
+
+include $DIR."/../../dmc_old_db.php";
+
+$db = mysqli_connect("mysql.democratize.ca",$user,$pass,"mmdemocratize");
+
+$r = $db->query("select * from xsubjects");
+
+$oldsub = array();
+
+$i = 1;
+
+while($row = $r->fetch_object()){
+  
+  $row->name = json_decode(
+    html_entity_decode($row->name)
+  );
+/*  
+  $values[] = 
+    "(".DB::get(1)->quote($row->name->en).","
+    . DB::get(1)->quote($row->name->fr).")";
+*/
+
+  $oldsub[$row->id] = $i++;
+
+}
+
+/*
+$values = implode(",", $values);
+DB::get(1)->query("insert into subject (name_en, name_fr) values {$values}");
+*/
+
+
+$r = $db->query(
+  "select subject, 
+  concat(session,'/',number) as pscn
+  from subjectmap
+  join xbills on xbills.id = subjectmap.bill_id
+  ");
+
+$values = array();
+
+while($row = $r->fetch_object()){
+  
+  $row->subject_id = $oldsub[$row->subject];
+  unset($row->subject);
+  
+  $values[] = "("
+    .DB::get(1)->quote($row->pscn).","
+    .DB::get(1)->quote($row->subject_id)
+    .")";
+
+}
+
+$values = implode(",", $values);
+DB::get(1)->query("insert into bill_subject (pscn, subject_id) values {$values}");
+
+
