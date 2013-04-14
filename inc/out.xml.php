@@ -1,8 +1,8 @@
 <?php
 
-header("Content-type:text/xml; charset:ISO-8859-1;");
+header("Content-type:text/xml;charset=utf-8");
 
-$doc = new DOMDocument('1.0', 'ISO-8859-1');
+$doc = new DOMDocument('1.0', 'utf-8');
 
 function xml_encode(&$node, $k, $v){//, $v){
   
@@ -35,7 +35,7 @@ function xml_encode(&$node, $k, $v){//, $v){
     $n->appendChild($doc->createTextNode($v));
   
   }
-
+  
   $node->appendChild($n);
   
 }
