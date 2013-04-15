@@ -25,8 +25,10 @@ class Request {
       throw new HTTP_status (405, array("Allow:",$this->get_allow_str()));
     
     $this->response = new StdClass;
-    $this->$method($args);
-  
+    
+    if($error = $this->$method($args))
+      $this->response->error = $error;
+    
   }
   
   // //  Implement these in your subclass to enable each method

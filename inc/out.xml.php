@@ -44,5 +44,3 @@ function xml_encode(&$node, $k, $v){//, $v){
 xml_encode($doc, "Response", $Response);
 
 echo $doc->saveXML();
-
-

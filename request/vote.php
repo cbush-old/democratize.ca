@@ -68,16 +68,77 @@ class Vote_request extends Request {
     
     if(!preg_match("/^[1-9][0-9]-[1-9]$/",$ps)
     ||!preg_match("/^(c|s|t|u)-[1-9][0-9]{0,4}$/",$cn))
-      throw new HTTP_status(400);
+      return "No bill specified";
+      
+    $pscn = "{$ps}/{$cn}";    
     
-    $pscn = "{$ps}-{$cn}";
+    $count = DB::query("select pscn from bill where pscn='{$pscn}' limit 1")->rowCount();
     
+    if(!$count)
+      return "Bill {$pscn} not found";
     
-    
-    
-    $this->response = $_SERVER["REMOTE_ADDR"];
-    
-    
-  }
+    if(!isset($_POST['vote']))
+      return "No vote sent";
   
+    $vote = trim(strtolower($_POST['vote']));
+    
+    if($vote!="y"&&$vote!="n")
+      return "Vote must be 'y' or 'n'";
+    
+    if(!isset($_POST['fsa']))
+      return "Valid FSA required";
+      
+    $fsa = strtoupper($_POST['fsa']);
+    
+    if(!preg_match("/^[A-Z][0-9][A-Z]{1,2}$/", $fsa))
+      return "Invalid FSA format";
+    
+
+    // Check that FSA exists, once the FSA table is complete....
+    // $count = DB::query("select fsa from fsa where fsa='{$fsa}' limit 1")->rowCount();
+  
+    $entry['pscn'] = $pscn;
+    $entry['date'] = date("Y-m-d H:i:s", time());
+    $entry['ip_hash'] = sha1($_SERVER["REMOTE_ADDR"]);
+    $entry['user'] = 0; // not implemented  
+    $entry['fsa'] = $fsa;
+    
+    if(isset($_POST['profile'])){
+      $profile = json_decode($_POST['profile']);
+      if($profile) 
+        $entry['profile'] = json_encode($profile);
+    }
+      
+    $vote=='y'
+      and $entry['vote_yes'] = 1
+      or $entry['vote_no'] = 1;
+    
+    foreach($entry as &$v)
+      $v = DB::get(1)->quote($v);
+  
+    $fields = implode(",", array_keys($entry));
+    $values = implode(",", $entry);
+    
+    try { 
+
+      DB::get(1)->query("start transaction;");
+    
+      $r = DB::get(1)->query(
+        "delete from `vote` 
+        where ip_hash = {$entry['ip_hash']}
+        && pscn = {$entry['pscn']}"
+      );
+      $this->response->deleted = $r->rowCount();
+
+      $r = DB::get(1)->query("insert into `vote` ({$fields}) values ({$values})");
+      $this->response->inserted = $r->rowCount();
+      DB::get(1)->query("commit;");
+    
+    } catch(PDOException $e){
+    
+      DB::get(1)->query("rollback;");
+      return "{$e->errorInfo[2]}";
+      
+    }
+  }
 }

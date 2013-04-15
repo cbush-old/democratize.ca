@@ -3,6 +3,8 @@
 *.png
 *.gif
 *.ico
-var/*
+var/
+test/
 *.local.*
+admin/
 
