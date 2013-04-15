@@ -108,7 +108,7 @@ class Vote_request extends Request {
       if($profile) 
         $entry['profile'] = json_encode($profile);
     }
-      
+
     $vote=='y'
       and $entry['vote_yes'] = 1
       or $entry['vote_no'] = 1;
