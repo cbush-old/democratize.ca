@@ -1,3 +1,7 @@
+****This document is out of date and will probably be deleted soon.****
+
+
+
 [] = array
 @ = object
 $ = variable
