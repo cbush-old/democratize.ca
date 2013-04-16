@@ -1,6 +1,5 @@
 Comma separated args
 Vote - GET - get vote breakdown
-Publication - GET
 Summary - GET
 Task/Import Summary
 Event - GET
