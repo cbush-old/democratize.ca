@@ -108,8 +108,8 @@ class Bill_request extends Request {
       "riding.name as riding",
       "riding.province as province",
       "mp.party as party",
-      "(select sum(vote_yes) from vote where vote.pscn = bill.pscn) as votes_yes",
-      "(select sum(vote_no) from vote where vote.pscn = bill.pscn) as votes_no",
+      "(select sum(vote.yes) from vote where vote.pscn = bill.pscn) as votes_yes",
+      "(select sum(vote.no) from vote where vote.pscn = bill.pscn) as votes_no",
       "(select count(*) from comment where comment.pscn = bill.pscn) as n_comments"
     );
     
