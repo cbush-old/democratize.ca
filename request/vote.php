@@ -3,60 +3,56 @@
 class Vote_request extends Request {
 
   public function GET($args){
+  
+    $select = array(
+      "vote.pscn as bill",
+      "sum(vote.yes) as yes",
+      "sum(vote.no) as no",
+      "count(*) as total"
+    );
     
-    $this->response->votes = array();
-    
-    $req = new StdClass;
-    $req->parl = 0;
-    $req->sess = 0;
-    $req->chamber = "";
-    $req->number = 0;
+    $where = array();
+    $by_riding = 0;
     
     foreach($args as $arg){
-      if(preg_match("/^([1-9][0-9])(?:-([1-9]))?$/",$arg,$match)){
-        if(isset($match[1])) $req->parl = $match[1];
-        if(isset($match[2])) $req->sess = $match[2];
-      } else if(preg_match("/^(c|s|t|u)(?:-?([1-9][0-9]{0,4}))$/",$arg,$match)){
-        if(isset($match[1])) $req->chamber = strtoupper($match[1]);
-        if(isset($match[2])) $req->number = $match[2];
+      if(preg_match("/^([1-9][0-9])(?:-?([1-9]))?$/", $arg, $match)){
+        if(isset($match[1])) $where[] = "bill.parl='{$match[1]}'";
+        if(isset($match[2])) $where[] = "bill.sess='{$match[2]}'";
+      } else if(preg_match("/^(c|s|t|u)-?([1-9][0-9]{0,4})?$/", $arg, $match)){
+        if(isset($match[1])) $where[] = "bill.chamber='".strtoupper($match[1])."'";
+        if(isset($match[2])) $where[] = "bill.number='{$match[2]}'";
+      } else if($arg=="by-riding"){
+        $by_riding = 1;
       }
     }
     
-    if(!$req->parl||!$req->sess||!$req->chamber||!$req->number){
-      
-      $r = DB::query("select
-        sum(vote_yes) as vote_yes,
-        sum(vote_no) as vote_no,
-        count(*) as vote_total,
-        pscn from vote group by pscn
-      ");
-      
-      while($row = $r->fetchObject())
-        $this->response->votes[] = $row;
-      
-    } else {
+    $where = implode("&&", $where);
+    if($where) $where = "where {$where}";
     
-      $pscn = "{$req->parl}-{$req->sess}/{$req->chamber}-{$req->number}";
-      $r = DB::query("select 
-        sum(vote_yes) as vote_yes,
-        sum(vote_no) as vote_no,
-        count(*) as vote_total
-        from vote where pscn = '{$pscn}'
-        group by pscn");
-  
-      if(!$r->rowCount()){
-        $row = new StdClass;
-        $row->vote_yes = 0;
-        $row->vote_no = 0;
-        $row->vote_total = 0;
-        $this->response->votes[] = $row;
-        return;
-      }
-      
-      while($row = $r->fetchObject())
-        $this->response->votes[] = $row;
+    $join = array("join vote on vote.pscn = bill.pscn");
     
-      
+    $group = array("bill.pscn");
+    
+    if($by_riding){
+      $select[] = "riding.lcname as riding_lcname";
+      $select[] = "riding.name as riding";
+      $join[] = "left join fsa on fsa.code = vote.fsa";
+      $join[] = "left join riding on riding.lcname = fsa.riding_lcname";
+      array_unshift($group, "riding.lcname");
+    }
+    
+    $select = implode(",",$select);
+    $join = implode(" ", $join);
+    $group = implode(",", $group);
+    
+    $r = DB::query("select {$select} from bill
+      {$join} {$where} group by {$group}");
+    
+    $this->response->votes = array();
+    
+    while($row = $r->fetchObject()){
+      $this->response->votes[] = $row;
+    
     }
   
   }
@@ -110,8 +106,8 @@ class Vote_request extends Request {
     }
 
     $vote=='y'
-      and $entry['vote_yes'] = 1
-      or $entry['vote_no'] = 1;
+      and $entry['yes'] = 1
+      or $entry['no'] = 1;
     
     foreach($entry as &$v)
       $v = DB::get(1)->quote($v);
