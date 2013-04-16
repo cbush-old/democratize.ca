@@ -16,6 +16,7 @@ static $action = array(
   'event' => 'Event_request',
   'mp' => 'Mp_request',
   'publication' => 'Publication_request',
+  'riding' => 'Riding_request',
   'subject' => 'Subject_request',
   'summary' => 'Summary_request',
   'user' => 'User_request',
