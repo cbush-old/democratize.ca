@@ -36,7 +36,8 @@ class Bill_request extends Request {
       },
       
       "party" => function($arg, &$req){
-        if(!isset(party_abbrev_array()[$arg])) 
+        $p = party_abbrev_array();
+        if(!isset($p[$arg])) 
           return false;
         return $req->party = $arg;
       },
