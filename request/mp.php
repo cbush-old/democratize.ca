@@ -21,9 +21,11 @@ class Mp_request extends Request {
 
     $where = array();
     
+    $parties = party_abbrev_array();
+    
     foreach($args as $arg){
       
-      if(isset(party_abbrev_array()[$arg]))
+      if(isset($parties[$arg]))
         $where[] = "party='{$arg}'";
       
       else if(preg_match("/^[a-z-]{4,}$/",$arg))
