@@ -19,13 +19,28 @@ class Mp_request extends Request {
       ) as n_bills"
     );
 
+    $where = array();
+    
+    foreach($args as $arg){
+      
+      if(isset(party_abbrev_array()[$arg]))
+        $where[] = "party='{$arg}'";
+      
+      else if(preg_match("/^[a-z-]{4,}$/",$arg))
+        $where[] = "alias like '%{$arg}%'";
+      
+    }
+    
     $select = implode(",", $select);
+    $where = implode("&&", $where);
+    if($where) $where = "where {$where}";
     
     $query = "select {$select} from mp 
       join party on party.id = mp.party
       join riding on riding.lcname = mp.riding_lcname
       join alias_mp on alias_mp.mp_lcname = mp.lcname
       join bill on bill.mp_alias = alias_mp.alias
+      {$where}
       group by mp.lcname
       ";
     $result = DB::query($query);

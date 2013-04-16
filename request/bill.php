@@ -36,10 +36,7 @@ class Bill_request extends Request {
       },
       
       "party" => function($arg, &$req){
-        static $parties = array(
-          "cpc"=>1,"lpc"=>1,"ndp"=>1,"bq"=>1,"gp"=>1,"pc"=>1,"ind"=>1
-        );
-        if(!isset($parties[$arg])) 
+        if(!isset(party_abbrev_array()[$arg])) 
           return false;
         return $req->party = $arg;
       },

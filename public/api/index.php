@@ -98,7 +98,7 @@ try {
 
   preg_match("/^(html|json|xml)$/",$_GET["format"])
     and $format = $_GET["format"]
-    or $format = "html";
+    or $format = $method=="GET"? "html":"json";
 
   require "../../inc/out.{$format}.php";
 

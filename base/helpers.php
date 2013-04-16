@@ -1,5 +1,12 @@
 <?php
 
+function & party_abbrev_array(){
+  static $parties = array(
+    "cpc"=>1,"lpc"=>1,"ndp"=>1,"bq"=>1,"gp"=>1,"pc"=>1,"ind"=>1
+  );
+  return $parties;
+}
+
 function request_method(){
   static $method = null;
   static $OK = array(
