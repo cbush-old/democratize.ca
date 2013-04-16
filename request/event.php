@@ -24,16 +24,13 @@ class Event_request extends Request {
     foreach($args as $arg){
       if(preg_match("/^([1-9][0-9])(?:-?([1-9]))?$/", $arg, $match)){
         if(isset($match[1])) $where[] = "bill.parl='{$match[1]}'";
-        else return "Specific bill pscn required";
         if(isset($match[2])) $where[] = "bill.sess='{$match[2]}'";
-        else return "Specific bill pscn required";
       } else if(preg_match("/^(c|s|t|u)-?([1-9][0-9]{0,4})?$/", $arg, $match)){
         if(isset($match[1])) $where[] = "bill.chamber='".strtoupper($match[1])."'";
-        else return "Specific bill pscn required";
         if(isset($match[2])) $where[] = "bill.number='{$match[2]}'";
-        else return "Specific bill pscn required";
       }
     }
+    
     
     
     $where = implode("&&", $where);
