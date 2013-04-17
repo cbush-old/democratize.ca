@@ -5,7 +5,6 @@ require_once("../base/exceptions.php");
 require_once("../base/helpers.php");
 require_once("../base/codes.php");
 require_once("../base/db.php");
-require_once("../base/get_controller_name.php");
 
 
 echo "<h3>Democratize.ca 0.4 (Experimental)</h3>";
