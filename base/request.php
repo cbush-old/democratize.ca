@@ -12,6 +12,21 @@ function request_body(){
   
 }
 
+function request_body_assoc(){
+  
+  static $body = null;
+  if(!$body){
+    $body = array();
+    foreach(explode("&",request_body()) as $d){
+      $x = explode("=",$d);
+      $k = $x[0];
+      $v = isset($x[1]) ? $x[1] : "";
+      $body[$k] = $v;
+    }
+  }
+  return $body;
+  
+}
 
 
 class Request {
@@ -22,7 +37,7 @@ class Request {
   public function __construct($method, $args){
     
     if(!method_exists($this,$method))
-      throw new HTTP_status (405, array("Allow:",$this->get_allow_str()));
+      throw new HTTP_status (405, array("Allow"=>$this->get_allow_str()));
     
     $this->response = new StdClass;
     

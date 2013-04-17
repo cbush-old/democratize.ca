@@ -17,6 +17,7 @@ static $action = array(
   'mp' => 'Mp_request',
   'publication' => 'Publication_request',
   'riding' => 'Riding_request',
+  'session' => 'Session_request', // authentication
   'subject' => 'Subject_request',
   'summary' => 'Summary_request',
   'user' => 'User_request',
