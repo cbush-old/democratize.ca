@@ -25,8 +25,8 @@ class Session_request extends Request {
     $key = strpos($value,'@') ? 'email':'username';
     
     $hash = DB::get()->quote($bcrypt->hash($_POST['pass']));
-
-    $r = DB::query("select email, hash from user where {$key}={$value}");
+    
+    $r = DB::query("select id, hash from user where {$key}={$value}");
     
     if($r->rowCount()==0)
       return ucfirst($key)." not found";
@@ -36,21 +36,21 @@ class Session_request extends Request {
     if(!$bcrypt->verify($_POST['pass'],$row->hash))
       return "Password incorrect".$hash.$row->hash;
       
-    $user = DB::get()->quote($row->email);
+    $user = DB::get()->quote($row->id);
     $created = DB::get()->quote(time());
-    $session_id = DB::get()->quote(sha1($user.$created));
+    $id = sha1(sha1($user.$created).sha1(mt_rand())).sha1(mt_rand());
+    $id_quoted = DB::get()->quote($id);
+    $ip = DB::get()->quote(sha1($_SERVER["REMOTE_ADDR"]));
     
-    
-    $values = implode(",",array($session_id,$user,$created));
-    
+    $values = implode(",",array($id_quoted,$ip,$user,$created));
     
     try {
     
       DB::get(1)->query("start transaction;");
       DB::get(1)->query("delete from session where user={$user};");
-      DB::get(1)->query("insert into session (id, user, created) values ({$values})");
+      DB::get(1)->query("insert into session (id, ip, user, created) values ({$values})");
       DB::get(1)->query("commit;");
-      setcookie("session", $session_id);
+      setcookie("session", $id);
       $this->response->logged_in = true;
 
     } catch(PDOException $e){
@@ -64,14 +64,16 @@ class Session_request extends Request {
   
   public function DELETE($args){
   
-    if(!isset($_COOKIE["id"]))
+    $user = authenticated();
+    
+    if(!$user)
       return "Not logged in";
       
-    $id = DB::get(1)->quote($_COOKIE["id"]);
+    $user = DB::get(1)->quote($user);
     
     try {
-    
-      $r = DB::get(1)->query("delete from session where id={$id}");
+      
+      $r = DB::get(1)->query("delete from session where user={$user}");
       if(!$r->rowCount())
         return "No sessions deleted";
       $this->response->logged_out = true;

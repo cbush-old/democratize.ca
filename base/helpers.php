@@ -1,5 +1,33 @@
 <?php
 
+function is_valid_email($s){
+  return preg_match("/^[A-z0-9-_\.]+@[A-z0-9-_\.]+\.[a-z]{2,4}$/",$s);
+}
+
+function authenticated(){
+
+  if(!isset($_COOKIE['session']))
+    return false;
+    
+  $session = DB::get()->quote($_COOKIE['session']);
+  
+  // TODO: Separate this to provide more info when someone gets 
+  // locked out
+  
+  $ip = DB::get()->quote(sha1($_SERVER["REMOTE_ADDR"]));
+  
+  $r = DB::query(
+    "select user from session where id={$session} && ip={$ip}"
+  );
+
+  if(!$r->rowCount())
+    return false;
+    
+  $row = $r->fetchObject();
+  return $row->user;
+
+}
+
 function & party_abbrev_array(){
   static $parties = array(
     "cpc"=>1,"lpc"=>1,"ndp"=>1,"bq"=>1,"gp"=>1,"pc"=>1,"ind"=>1
