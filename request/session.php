@@ -34,7 +34,7 @@ class Session_request extends Request {
     $row = $r->fetchObject();
     
     if(!$bcrypt->verify($_POST['pass'],$row->hash))
-      return "Password incorrect".$hash.$row->hash;
+      return "Password incorrect";
       
     $user = DB::get()->quote($row->id);
     $created = DB::get()->quote(time());
