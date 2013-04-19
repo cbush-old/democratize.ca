@@ -1,0 +1,64 @@
+#!/usr/bin/env php
+<?php
+
+$DIR = dirname(__FILE__);
+
+include "{$DIR}/../base/db.php";
+
+function upload(&$values){
+
+  $values = implode(",", $values);
+  DB::get(1)->query("insert into summary (pscn, summary_en, summary_fr) values {$values}");
+  $values = array();
+  
+}
+
+$missing = array();
+$values = array();
+$target = array();
+
+$r = DB::query("select publication.pscn, parl_id from publication");
+
+while($row = $r->fetchObject()){
+
+  $target[$row->pscn] = $row->parl_id;
+  
+}
+
+echo count($target);
+
+foreach($target as $pscn=>$targ){
+
+  $path = "{$DIR}/../var/publications/{$targ}.html";
+  
+  if(!file_exists($path)){
+    $missing[] = $targ;
+    continue;
+  }
+  
+  $text = file_get_contents($path);
+
+  $summary_en = "";
+  $summary_fr = "";
+  
+  if(preg_match("#SUMMARY(.*?)</td#si",$text,$match))
+    $summary_en = strip_tags($match[1]);
+  
+  if(preg_match("#SOMMAIRE(.*?)</td#si",$text,$match))
+    $summary_fr = strip_tags($match[1]);
+
+  $values[] = "(".implode(",",array(
+    DB::get(1)->quote($pscn),
+    DB::get(1)->quote($summary_en),
+    DB::get(1)->quote($summary_fr)
+  )).")";
+  
+  if(count($values) > 32)
+    upload($values);
+  
+}
+
+if(count($values))
+  upload($values);
+
+var_dump($missing);
