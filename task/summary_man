@@ -27,6 +27,7 @@ while($row = $r->fetchObject()){
 
 echo count($target);
 
+
 foreach($target as $pscn=>$targ){
 
   $path = "{$DIR}/../var/publications/{$targ}.html";
